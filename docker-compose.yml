@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  nginx:
+    restart: always
+    image: openresty/openresty:centos
+    ports:
+      - 80:80
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - ./nginx/www:/www
+      - ./nginx/config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./nginx/config/conf.d:/etc/nginx/conf.d
+      - ./nginx/config/sites-enabled:/etc/nginx/sites-enabled
+      - ./nginx/config/stream-sites-enabled:/etc/nginx/stream-sites-enabled
+    environment:
+      TZ: Asia/Shanghai
+    logging:
+      options:
+        max-size: 10m

@@ -1,0 +1,32 @@
+server {
+    listen       9000;
+
+    server_name  _;
+
+
+    add_header Access-Control-Allow-Credentials true;
+    add_header Access-Control-Allow-Origin $http_origin;
+    add_header Access-Control-Allow-Headers Origin,X-Requested-With,Content-Type,Accept,Connection,User-Agent,Cookie;
+    add_header Access-Control-Allow-Methods GET,POST,PUT,PATCH,DELETE,OPTIONS;
+
+    location / {
+
+        if ($request_method = "OPTIONS") {
+            add_header 'Access-Control-Max-Age' 86400;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS, DELETE';
+            add_header 'Access-Control-Allow-Headers' 'reqid, nid, host, x-real-ip, x-forwarded-ip, event-type, event-id, accept, content-type';
+            add_header 'Content-Length' 0;
+            add_header 'Content-Type' 'text/plain, charset=utf-8';
+            return 204;
+        }
+
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_pass http://192.168.14.219:1337;
+
+        header_filter_by_lua_block {
+            ngx.header['X-Powered-By'] = 'cloudfare'
+            ngx.header['Access-Control-Allow-Origin'] = ngx.req.get_headers()['Host']
+        }
+    }
+
+}
